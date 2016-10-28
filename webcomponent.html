@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Basic Example with WebComponents</title>
+  </head>
+  <body>
+    <h1>Basic Example with WebComponents</h1>
+    <div id="container">
+      <p>
+        If you can see this, React is <strong>not</strong> working right.
+        If you checked out the source from GitHub make sure to run <code>grunt</code>.
+      </p>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.21/webcomponents.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.js"></script>
+
+    <script type="text/babel">
+      // Define React components
+      class XSearch extends React.Component {
+        render() {
+          var name = this.props.name;
+          var url = 'https://www.google.com/search?q=' + encodeURIComponent(name);
+          return <a href={url}>{name}</a>;
+        }
+      }
+
+      class HelloMessage extends React.Component {
+        render() {
+          var name = this.props.name;
+          return <div>Hello <XSearch name={name} />!</div>;
+        }
+      }
+
+      // Define WebComponent "greeter"
+      var proto = Object.create(HTMLElement.prototype, {
+        attachedCallback: {
+          value: function() {
+            var root = this.createShadowRoot();
+            var name = this.getAttribute('name');
+            ReactDOM.render(<HelloMessage name={name} />, root);
+          }
+        }
+      });
+      document.registerElement('user-greeter', {prototype: proto});
+
+      // Mount WebComponent which uses React inside
+      var container = document.getElementById('container');
+      ReactDOM.render(<user-greeter name="Jim Sproch" />, container);
+    </script>
+  </body>
+</html>
